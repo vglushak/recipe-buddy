@@ -9,6 +9,34 @@
       "slots": []
     },
     {
+      "name": "AMAZON.CancelIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.NoIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.YesIntent",
+      "samples": []
+    },
+    {
+      "name": "FinishRecipeIntent",
+      "samples": [
+        "no",
+        "it's ok"
+      ],
+      "slots": []
+    },
+    {
       "name": "IngredientIntent",
       "samples": [
         "{ingredient}",
@@ -24,15 +52,6 @@
       ]
     },
     {
-      "name": "SearchRecipeIntent",
-      "samples": [
-        "that's all I have",
-        "nothing",
-        "that's it"
-      ],
-      "slots": []
-    },
-    {
       "name": "NextRecipeIntent",
       "samples": [
         "yes please",
@@ -42,32 +61,13 @@
       "slots": []
     },
     {
-      "name": "FinishRecipeIntent",
+      "name": "SearchRecipeIntent",
       "samples": [
-        "no",
-        "it's ok"
+        "that's all I have",
+        "nothing",
+        "that's it"
       ],
       "slots": []
-    },
-    {
-      "name": "AMAZON.YesIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.NoIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.HelpIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.StopIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.CancelIntent",
-      "samples": []
     }
   ],
   "types": [
@@ -85,13 +85,6 @@
           "id": null,
           "name": {
             "value": "eggs",
-            "synonyms": []
-          }
-        },
-        {
-          "id": null,
-          "name": {
-            "value": "potato",
             "synonyms": []
           }
         },
@@ -259,34 +252,6 @@
         {
           "id": null,
           "name": {
-            "value": "potato",
-            "synonyms": []
-          }
-        },
-        {
-          "id": null,
-          "name": {
-            "value": "potato",
-            "synonyms": []
-          }
-        },
-        {
-          "id": null,
-          "name": {
-            "value": "potato",
-            "synonyms": []
-          }
-        },
-        {
-          "id": null,
-          "name": {
-            "value": "potato",
-            "synonyms": []
-          }
-        },
-        {
-          "id": null,
-          "name": {
             "value": "meat",
             "synonyms": []
           }
@@ -337,4 +302,3 @@
     }
   ]
 }
-
