@@ -39,12 +39,7 @@ const SKILL_NAME = "Recipe buddy";
 // Weather courtesy of the Yahoo Weather API.
 // This free API recommends no more than 2000 calls per day
 
-const myAPI = {
-    host: 'query.yahooapis.com',
-    port: 443,
-    path: `/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22${encodeURIComponent(data.city)}%2C%20${data.state}%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`,
-    method: 'GET'
-};
+
 // 2. Skill Code =======================================================================================================
 
 const Alexa = require('alexa-sdk');
@@ -90,15 +85,32 @@ const handlers = {
 
     'SearchRecipeIntent': function () {
         var allIngs = this.attributes['ingredients'].toString();
-        var say = 'Searching for recipes with ' + allIngs + '... I have found 5 recipes. Do you want to hear first recipe?';
-        this.response.speak(say).listen(say);
-        this.attributes['lastNumber'] = '0';
-        this.emit(':responseReady');
+
+        recipeSearch(allIngs, (json) => {
+
+
+
+
+                var recipes = JSON.stringify(json);
+                var say = 'Searching for recipes with ' + allIngs + '... I have found ' + json.length + ' different recipes. Do you want to hear the first recipe?';
+                this.response.speak(say).listen(say);
+                this.attributes['json'] = json;
+                this.attributes['lastNumber'] = 0;
+                this.emit(':responseReady');
+
+        });
+        
     },
 
     'NextRecipeIntent': function() {
         var lastNumber = this.attributes['lastNumber'];
-        var say = 'Here is recipe number ' + lastNumber + '... Do you want to listen for next one?';
+        var next = lastNumber + 1
+        this.attributes['lastNumber'] = next;
+        var json = this.attributes['json'];
+        var title = json[next].title;
+        var ingredients = json[next].ingredients;
+        var say = 'Here is recipe number ' + next + ' It is  ' + title +  '. The ingredients you will need are ' + ingredients + '... Do you want to listen for the next one?';
+
         this.response.speak(say).listen(say);
         this.emit(':responseReady');
     },
@@ -106,7 +118,7 @@ const handlers = {
 
     'FinishRecipeIntent': function() {
         var lastNumber = this.attributes['lastNumber'];
-        var say = 'We have sent link to recipe ' + lastNumber + ' to your mobile phone. Bon appetite!';
+        var say = 'We have sent link to recipe number ' + lastNumber + ' to your mobile phone. Bon appetite!';
         this.response.speak(say).listen(say);
         this.emit(':responseReady');
     },
@@ -139,48 +151,16 @@ const handlers = {
 //    END of Intent Handlers {} ========================================================================================
 // 3. Helper Function  =================================================================================================
 
-function getRestaurantsByMeal(mealtype) {
 
-    var list = [];
-    for (var i = 0; i < data.restaurants.length; i++) {
+function recipeSearch(allIngs, callback) {
+    var http = require('http');
 
-        if(data.restaurants[i].meals.search(mealtype) >  -1) {
-            list.push(data.restaurants[i]);
-        }
-    }
-    return list;
-}
-
-function getRestaurantByName(restaurantName) {
-
-    var restaurant = {};
-    for (var i = 0; i < data.restaurants.length; i++) {
-
-        if(data.restaurants[i].name == restaurantName) {
-            restaurant = data.restaurants[i];
-        }
-    }
-    return restaurant;
-}
-
-function getAttractionsByDistance(maxDistance) {
-
-    var list = [];
-
-    for (var i = 0; i < data.attractions.length; i++) {
-
-        if(parseInt(data.attractions[i].distance) <= maxDistance) {
-            list.push(data.attractions[i]);
-        }
-    }
-    return list;
-}
-
-function getWeather(callback) {
-    var https = require('https');
-
-
-    var req = https.request(myAPI, res => {
+    var req = http.request({
+        host: 'www.recipepuppy.com',
+        port: 80,
+        path: '/api/?i='+allIngs,
+        method: 'GET'
+    }, res => {
         res.setEncoding('utf8');
         var returnData = "";
 
@@ -188,17 +168,8 @@ function getWeather(callback) {
             returnData = returnData + chunk;
         });
         res.on('end', () => {
-            var channelObj = JSON.parse(returnData).query.results.channel;
-
-            var localTime = channelObj.lastBuildDate.toString();
-            localTime = localTime.substring(17, 25).trim();
-
-            var currentTemp = channelObj.item.condition.temp;
-
-            var currentCondition = channelObj.item.condition.text;
-
-            callback(localTime, currentTemp, currentCondition);
-
+            var json = JSON.parse(returnData);
+            callback(json.results);
         });
 
     });

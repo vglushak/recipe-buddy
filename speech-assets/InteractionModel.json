@@ -322,6 +322,13 @@
         {
           "id": null,
           "name": {
+            "value": "ice cream",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
             "value": "carrot",
             "synonyms": []
           }
