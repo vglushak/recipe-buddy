@@ -5,7 +5,7 @@
 const languageStrings = {
     'en': {
         'translation': {
-            'WELCOME' : "Welcome to Recipe buddy",
+            'WELCOME' : "Welcome to Recipe buddy.",
             'HELP'    : "What do you have in your fridge. You can say bacon, eggs, potato",
             'ABOUT'   : "Recipe buddy look for recipes in the internet based on you ingredient list that you have in your fridge.",
             'STOP'    : "Okay, see you next time!"
@@ -13,26 +13,6 @@ const languageStrings = {
     }
     // , 'de-DE': { 'translation' : { 'TITLE'   : "Local Helfer etc." } }
 };
-const data = {
-    "city"        : "Gloucester",
-    "state"       : "MA",
-    "postcode"    : "01930",
-    "restaurants" : [
-        { "name":"Zeke's Place",
-            "address":"66 East Main Street", "phone": "978-283-0474",
-            "meals": "breakfast, lunch",
-            "description": "A cozy and popular spot for breakfast.  Try the blueberry french toast!"
-        }
-
-    ],
-    "attractions":[
-        {
-            "name": "Fenway Park",
-            "description": "Home of the Boston Red Sox, Fenway park hosts baseball games From April until October, and is open for tours. ",
-            "distance": "38"
-        }
-    ]
-}
 
 const SKILL_NAME = "Recipe buddy";
 
@@ -84,21 +64,24 @@ const handlers = {
     },
 
     'SearchRecipeIntent': function () {
-        var allIngs = this.attributes['ingredients'].toString();
+        var x = this.attributes['ingredients'];
+        if (typeof x === 'undefined') {
+            var say = 'You should add some ingredients to the list first. Please. Thanks!';
+            this.response.speak(say).listen(say);
+            this.emit(':responseReady');
+        } else {
+            var allIngs = x.toString();
 
-        recipeSearch(allIngs, (json) => {
+            recipeSearch(allIngs, (json) => {
+                    var recipes = JSON.stringify(json);
+                    var say = 'Searching for recipes with ' + allIngs + '... I have found ' + json.length + ' different recipes. Do you want to hear the first recipe?';
+                    this.response.speak(say).listen(say);
+                    this.attributes['json'] = json;
+                    this.attributes['lastNumber'] = 0;
+                    this.emit(':responseReady');
 
-
-
-
-                var recipes = JSON.stringify(json);
-                var say = 'Searching for recipes with ' + allIngs + '... I have found ' + json.length + ' different recipes. Do you want to hear the first recipe?';
-                this.response.speak(say).listen(say);
-                this.attributes['json'] = json;
-                this.attributes['lastNumber'] = 0;
-                this.emit(':responseReady');
-
-        });
+            });
+        }
         
     },
 
@@ -118,7 +101,7 @@ const handlers = {
 
     'FinishRecipeIntent': function() {
         var lastNumber = this.attributes['lastNumber'];
-        var say = 'We have sent link to recipe number ' + lastNumber + ' to your mobile phone. Bon appetite!';
+        var say = 'We have sent link to recipe number ' + lastNumber + ' to your mobile phone. <say-as interpret-as="interjection">Bon Apetite!</say-as>';
         this.response.speak(say).listen(say);
         this.emit(':responseReady');
     },
@@ -158,7 +141,7 @@ function recipeSearch(allIngs, callback) {
     var req = http.request({
         host: 'www.recipepuppy.com',
         port: 80,
-        path: '/api/?i='+allIngs,
+        path: '/api/?i='+encodeURIComponent(allIngs),
         method: 'GET'
     }, res => {
         res.setEncoding('utf8');

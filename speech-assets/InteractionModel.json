@@ -1,6 +1,18 @@
 {
   "intents": [
     {
+      "name": "LaunchRequest",
+      "samples": [
+        "hello",
+        "start",
+        "what is up",
+        "who is here",
+        "tell me about recipe buddy"
+      ],
+      "slots": []
+    },
+
+    {
       "name": "AboutIntent",
       "samples": [
         "about",
@@ -65,6 +77,8 @@
       "samples": [
         "that's all I have",
         "nothing",
+        "find me something",
+        "find me recipe",
         "that's it"
       ],
       "slots": []
